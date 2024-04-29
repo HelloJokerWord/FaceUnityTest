@@ -1,5 +1,7 @@
 package com.faceunity.nama.seekbar.internal.compat;
 
+import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
+
 import android.annotation.TargetApi;
 import android.content.res.ColorStateList;
 import android.graphics.Outline;
@@ -10,8 +12,6 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewParent;
 import android.widget.TextView;
-
-import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
 
 
 /**

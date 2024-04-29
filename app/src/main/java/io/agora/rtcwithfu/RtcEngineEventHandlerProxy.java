@@ -8,6 +8,12 @@ import io.agora.rtc2.IRtcEngineEventHandler;
 public class RtcEngineEventHandlerProxy extends IRtcEngineEventHandler {
     private static final String TAG = "RtcEngineEventHandlerPr";
     private ArrayList<RtcEngineEventHandler> mEventHandlers = new ArrayList<>();
+    private int mCallbackCount;
+    private int mWidth;
+    private int mHeight;
+    private int mSumRenderFps;
+    private int mSumDecoderFps;
+    private int mSumReceivedBitrate;
 
     public void addEventHandler(RtcEngineEventHandler handler) {
         if (!mEventHandlers.contains(handler)) mEventHandlers.add(handler);
@@ -45,22 +51,6 @@ public class RtcEngineEventHandlerProxy extends IRtcEngineEventHandler {
         }
     }
 
-    private int mCallbackCount;
-    private int mWidth;
-    private int mHeight;
-    private int mSumRenderFps;
-    private int mSumDecoderFps;
-    private int mSumReceivedBitrate;
-
-    public static class StatsInfo {
-        public int width;
-        public int height;
-        public int renderFps;
-        public int decoderFps;
-
-        public int receivedBitrate;
-    }
-
     public StatsInfo retrieveStatsInfo() {
         StatsInfo statsInfo = new StatsInfo();
         synchronized (this) {
@@ -84,12 +74,12 @@ public class RtcEngineEventHandlerProxy extends IRtcEngineEventHandler {
     public void onRemoteVideoStats(RemoteVideoStats remoteVideoStats) {
         super.onRemoteVideoStats(remoteVideoStats);
         //        Log.d(TAG, String.format("onRemoteVideoStats. width %d, height %d, " +
-//                        "delay %d, receivedBitrate %d, decoderOutputFrameRate %d, rendererOutputFrameRate %d, " +
-//                        "packetLossRate %d, totalFrozenTime %d, totalActiveTime %d, rxStreamType %d",
-//                remoteVideoStats.width, remoteVideoStats.height, remoteVideoStats.delay, remoteVideoStats.receivedBitrate,
-//                remoteVideoStats.decoderOutputFrameRate, remoteVideoStats.rendererOutputFrameRate,
-//                remoteVideoStats.packetLossRate, remoteVideoStats.totalFrozenTime, remoteVideoStats.totalActiveTime,
-//                remoteVideoStats.rxStreamType));
+        //                        "delay %d, receivedBitrate %d, decoderOutputFrameRate %d, rendererOutputFrameRate %d, " +
+        //                        "packetLossRate %d, totalFrozenTime %d, totalActiveTime %d, rxStreamType %d",
+        //                remoteVideoStats.width, remoteVideoStats.height, remoteVideoStats.delay, remoteVideoStats.receivedBitrate,
+        //                remoteVideoStats.decoderOutputFrameRate, remoteVideoStats.rendererOutputFrameRate,
+        //                remoteVideoStats.packetLossRate, remoteVideoStats.totalFrozenTime, remoteVideoStats.totalActiveTime,
+        //                remoteVideoStats.rxStreamType));
         synchronized (this) {
             mWidth = remoteVideoStats.width;
             mHeight = remoteVideoStats.height;
@@ -98,5 +88,14 @@ public class RtcEngineEventHandlerProxy extends IRtcEngineEventHandler {
             mSumReceivedBitrate += remoteVideoStats.receivedBitrate;
             ++mCallbackCount;
         }
+    }
+
+    public static class StatsInfo {
+        public int width;
+        public int height;
+        public int renderFps;
+        public int decoderFps;
+
+        public int receivedBitrate;
     }
 }

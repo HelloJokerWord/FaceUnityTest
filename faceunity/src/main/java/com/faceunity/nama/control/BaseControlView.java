@@ -1,20 +1,20 @@
 package com.faceunity.nama.control;
 
-import android.animation.ValueAnimator;
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
-import android.util.AttributeSet;
-import android.widget.FrameLayout;
-
 import com.faceunity.nama.base.BaseListAdapter;
 import com.faceunity.nama.dialog.BaseDialogFragment;
 import com.faceunity.nama.dialog.ConfirmDialogFragment;
 import com.faceunity.nama.listener.OnBottomAnimatorChangeListener;
+
+import android.animation.ValueAnimator;
+import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
 
 /**
  * DESC：自定义菜单Base类
@@ -23,22 +23,30 @@ import com.faceunity.nama.listener.OnBottomAnimatorChangeListener;
 public abstract class BaseControlView extends FrameLayout {
 
     protected Context mContext;
+    /****************************************菜单动画*****************************************************/
+
+
+    protected boolean isBottomShow;
+    protected ValueAnimator bottomLayoutAnimator = null;
+    protected OnBottomAnimatorChangeListener onBottomAnimatorChangeListener = null;
+
 
     public BaseControlView(@NonNull Context context) {
         super(context);
         mContext = context;
     }
 
+
     public BaseControlView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
+
     public BaseControlView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }
-
 
     /**
      * adapter单项点击，选中状态变更
@@ -55,7 +63,6 @@ public abstract class BaseControlView extends FrameLayout {
             adapter.getViewByPosition(position).setSelected(true);
         }
     }
-
 
     /**
      * 显示弹框
@@ -78,20 +85,11 @@ public abstract class BaseControlView extends FrameLayout {
         confirmDialogFragment.show(((FragmentActivity) mContext).getSupportFragmentManager(), "ConfirmDialogFragmentReset");
     }
 
-
     protected void initHorizontalRecycleView(RecyclerView recyclerView) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
-
-
-    /****************************************菜单动画*****************************************************/
-
-
-    protected boolean isBottomShow;
-    protected ValueAnimator bottomLayoutAnimator = null;
-    protected OnBottomAnimatorChangeListener onBottomAnimatorChangeListener = null;
 
 
 }

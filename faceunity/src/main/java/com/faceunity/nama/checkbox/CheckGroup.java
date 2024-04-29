@@ -1,7 +1,7 @@
 package com.faceunity.nama.checkbox;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
+import androidx.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -202,6 +202,15 @@ public class CheckGroup extends LinearLayout {
         public void onCheckedChanged(CheckGroup group, @IdRes int checkedId);
     }
 
+    public interface OnDispatchActionUpListener {
+        /**
+         * 分发 action up 事件时回调
+         *
+         * @param x
+         */
+        void onDispatchActionUp(int x);
+    }
+
     private class CheckedStateTracker implements CompoundButton.OnCheckedChangeListener {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -264,14 +273,5 @@ public class CheckGroup extends LinearLayout {
                 mOnHierarchyChangeListener.onChildViewRemoved(parent, child);
             }
         }
-    }
-
-    public interface OnDispatchActionUpListener {
-        /**
-         * 分发 action up 事件时回调
-         *
-         * @param x
-         */
-        void onDispatchActionUp(int x);
     }
 }

@@ -1,10 +1,10 @@
 package io.agora.profile;
 
-import android.os.Build;
-import android.os.Environment;
-
 import java.io.File;
 import java.util.regex.Pattern;
+
+import android.os.Build;
+import android.os.Environment;
 
 /**
  * Created by tujh on 2018/2/7.

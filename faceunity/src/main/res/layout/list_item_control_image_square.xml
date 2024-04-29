@@ -9,6 +9,6 @@
         android:layout_height="@dimen/x116"
         android:background="@drawable/bg_control_square_selector"
         android:padding="@dimen/x4"
-        android:scaleType="centerInside"  />
+        android:scaleType="centerInside" />
 
 </LinearLayout>

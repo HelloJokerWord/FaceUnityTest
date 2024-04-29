@@ -2,7 +2,7 @@ package com.faceunity.nama.checkbox;
 
 import android.content.Context;
 import android.graphics.drawable.StateListDrawable;
-import android.support.v7.widget.AppCompatCheckBox;
+import androidx.appcompat.widget.AppCompatCheckBox;
 import android.util.AttributeSet;
 
 

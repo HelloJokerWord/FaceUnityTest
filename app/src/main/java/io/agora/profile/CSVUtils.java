@@ -1,12 +1,5 @@
 package io.agora.profile;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Process;
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Process;
+import android.util.Log;
 import io.agora.rtcwithfu.RtcEngineEventHandlerProxy;
 
 /**
@@ -45,10 +44,6 @@ public class CSVUtils {
 
     private RtcEngineEventHandlerProxy mRtcEngineEventHandler;
 
-    public void setRtcEngineEventHandler(RtcEngineEventHandlerProxy rtcEngineEventHandlerProxy) {
-        mRtcEngineEventHandler = rtcEngineEventHandlerProxy;
-    }
-
     public CSVUtils(Context context) {
         mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         mCPUInfoUtil = new CPUInfoUtil(context);
@@ -56,6 +51,10 @@ public class CSVUtils {
         HandlerThread handlerThread = new HandlerThread(TAG, Process.THREAD_PRIORITY_BACKGROUND);
         handlerThread.start();
         mHandler = new Handler(handlerThread.getLooper());
+    }
+
+    public void setRtcEngineEventHandler(RtcEngineEventHandlerProxy rtcEngineEventHandlerProxy) {
+        mRtcEngineEventHandler = rtcEngineEventHandlerProxy;
     }
 
     public void initHeader(String folderName, StringBuilder headerInfo) {
@@ -102,35 +101,32 @@ public class CSVUtils {
             mAverageFps = FPSUtil.fpsAVG(FRAME_STEP);
             mAverageRenderTime = (double) mSumRenderTimeInNano / FRAME_STEP / 1_000_000;
             mSumRenderTimeInNano = 0;
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mCpuUsed = mCPUInfoUtil.getProcessCpuUsed();
-                    mMemory = MemoryInfoUtil.getMemory(mActivityManager.getProcessMemoryInfo(new int[]{Process.myPid()}));
-                    String strCPU = String.format(Locale.getDefault(), "%.2f", mCpuUsed);
-                    String strMemory = String.format(Locale.getDefault(), "%.2f", mMemory);
+            mHandler.post(() -> {
+                mCpuUsed = mCPUInfoUtil.getProcessCpuUsed();
+                mMemory = MemoryInfoUtil.getMemory(mActivityManager.getProcessMemoryInfo(new int[]{Process.myPid()}));
+                String strCPU = String.format(Locale.getDefault(), "%.2f", mCpuUsed);
+                String strMemory = String.format(Locale.getDefault(), "%.2f", mMemory);
 
-                    StringBuilder stringBuilder = new StringBuilder();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault());
-                    RtcEngineEventHandlerProxy.StatsInfo statsInfo = mRtcEngineEventHandler.retrieveStatsInfo();
-                    stringBuilder.append(dateFormat.format(new Date(mTimestamp))).append(COMMA)
-                            .append(String.format(Locale.getDefault(), "%.2f", mAverageFps)).append(COMMA)
-                            .append(String.format(Locale.getDefault(), "%.2f", mAverageRenderTime)).append(COMMA)
-                            .append(strCPU).append(COMMA)
-                            .append(strMemory).append(COMMA)
-                            .append(statsInfo.width).append("x")
-                            .append(statsInfo.height).append(COMMA)
-                            .append(statsInfo.renderFps).append(COMMA)
-                            .append(statsInfo.decoderFps).append(COMMA)
-                            .append(statsInfo.receivedBitrate).append(COMMA);
-                    Log.d(TAG, "Fps:" + String.format(Locale.getDefault(), "%.2f", mAverageFps)
-                            + "    Render Time:" + String.format(Locale.getDefault(), "%.2f", mAverageRenderTime));
-                    if (extraInfo != null) {
-                        stringBuilder.append(extraInfo);
-                    }
-                    stringBuilder.append("\n");
-                    flush(stringBuilder);
+                StringBuilder stringBuilder = new StringBuilder();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault());
+                RtcEngineEventHandlerProxy.StatsInfo statsInfo = mRtcEngineEventHandler.retrieveStatsInfo();
+                stringBuilder.append(dateFormat.format(new Date(mTimestamp))).append(COMMA)
+                        .append(String.format(Locale.getDefault(), "%.2f", mAverageFps)).append(COMMA)
+                        .append(String.format(Locale.getDefault(), "%.2f", mAverageRenderTime)).append(COMMA)
+                        .append(strCPU).append(COMMA)
+                        .append(strMemory).append(COMMA)
+                        .append(statsInfo.width).append("x")
+                        .append(statsInfo.height).append(COMMA)
+                        .append(statsInfo.renderFps).append(COMMA)
+                        .append(statsInfo.decoderFps).append(COMMA)
+                        .append(statsInfo.receivedBitrate).append(COMMA);
+                Log.d(TAG, "Fps:" + String.format(Locale.getDefault(), "%.2f", mAverageFps)
+                        + "    Render Time:" + String.format(Locale.getDefault(), "%.2f", mAverageRenderTime));
+                if (extraInfo != null) {
+                    stringBuilder.append(extraInfo);
                 }
+                stringBuilder.append("\n");
+                flush(stringBuilder);
             });
         }
         mFrameRate++;

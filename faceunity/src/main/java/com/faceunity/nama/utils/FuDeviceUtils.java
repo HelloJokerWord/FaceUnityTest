@@ -2,10 +2,6 @@ package com.faceunity.nama.utils;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.content.SharedPreferences;
-import android.os.Build;
-import android.util.Log;
-
 import com.faceunity.core.context.FUApplication;
 import com.faceunity.core.utils.FULogger;
 import com.faceunity.core.utils.FileUtils;
@@ -15,6 +11,10 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.util.Log;
 
 public class FuDeviceUtils {
 

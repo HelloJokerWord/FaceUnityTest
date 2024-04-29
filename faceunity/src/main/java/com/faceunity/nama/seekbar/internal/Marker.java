@@ -1,12 +1,16 @@
 package com.faceunity.nama.seekbar.internal;
 
+import com.faceunity.nama.R;
+import com.faceunity.nama.seekbar.internal.compat.SeekBarCompat;
+import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -14,11 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-
-import com.faceunity.nama.R;
-import com.faceunity.nama.seekbar.internal.compat.SeekBarCompat;
-import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
 
 
 /**
@@ -34,6 +33,7 @@ import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
 public class Marker extends ViewGroup implements MarkerDrawable.MarkerAnimationListener {
     private static final int PADDING_DP = 1;
     private static final int ELEVATION_DP = 8;
+    MarkerDrawable mMarkerDrawable;
     //The TextView to show the info
     private TextView mNumber;
     //The max width of this View
@@ -41,7 +41,6 @@ public class Marker extends ViewGroup implements MarkerDrawable.MarkerAnimationL
     //some distance between the thumb and our bubble marker.
     //This will be added to our measured height
     private int mSeparation;
-    MarkerDrawable mMarkerDrawable;
 
     public Marker(Context context, AttributeSet attrs, int defStyleAttr, String maxValue, int thumbSize, int separation) {
         super(context, attrs, defStyleAttr);
@@ -150,12 +149,12 @@ public class Marker extends ViewGroup implements MarkerDrawable.MarkerAnimationL
         animateOpen();
     }
 
-    public void setValue(CharSequence value) {
-        mNumber.setText(value);
-    }
-
     public CharSequence getValue() {
         return mNumber.getText();
+    }
+
+    public void setValue(CharSequence value) {
+        mNumber.setText(value);
     }
 
     public void animateOpen() {

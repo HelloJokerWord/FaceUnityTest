@@ -1,11 +1,11 @@
 package io.agora.rtcwithfu;
 
-import android.app.Application;
-import android.content.Context;
-
 import com.faceunity.nama.FUConfig;
 import com.faceunity.nama.FURenderer;
 import com.faceunity.nama.utils.FuDeviceUtils;
+
+import android.app.Application;
+import android.content.Context;
 
 public class MyApplication extends Application {
     private RtcEngineEventHandlerProxy mRtcEventHandler;

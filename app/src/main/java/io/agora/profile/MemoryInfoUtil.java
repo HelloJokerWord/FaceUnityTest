@@ -1,10 +1,10 @@
 package io.agora.profile;
 
+import java.lang.reflect.Field;
+
 import android.os.Build;
 import android.os.Debug;
-import android.support.annotation.RequiresApi;
-
-import java.lang.reflect.Field;
+import androidx.annotation.RequiresApi;
 
 /**
  * 内存使用率获取工具类
@@ -50,18 +50,18 @@ public abstract class MemoryInfoUtil {
                     + otherStats[13 * NUM_CATEGORIES + offsetPrivateClean] + otherStats[13 * NUM_CATEGORIES + offsetPrivateDirty]
                     + otherStats[16 * NUM_CATEGORIES + offsetPrivateClean] + otherStats[16 * NUM_CATEGORIES + offsetPrivateDirty];
             int all = javaHeap + nativeHeap + code + stack + graphics + other;
-//            Log.d("MemoryAll", "javaHeap=" + javaHeap
-//                    + "\nnativeHeap=" + nativeHeap + "\ncode=" + code + "\nstack=" + stack
-//                    + "\ngraphics=" + graphics + "\nother=" + other);
-//                    Log.e(TAG, "memory " + memoryStr
-//                            + " java-heap " + String.format("%.2f", ((double) javaHeap) / 1024)
-//                            + " native-heap " + String.format("%.2f", ((double) nativeHeap) / 1024)
-//                            + " code " + String.format("%.2f", ((double) code) / 1024)
-//                            + " stack " + String.format("%.2f", ((double) stack) / 1024)
-//                            + " graphics " + String.format("%.2f", ((double) graphics) / 1024)
-//                            + " other " + String.format("%.2f", ((double) other) / 1024)
-//                            + " pps " + String.format("%.2f", ((double) memoryInfos[0].getTotalPss()) / 1024)
-//                    );
+            //            Log.d("MemoryAll", "javaHeap=" + javaHeap
+            //                    + "\nnativeHeap=" + nativeHeap + "\ncode=" + code + "\nstack=" + stack
+            //                    + "\ngraphics=" + graphics + "\nother=" + other);
+            //                    Log.e(TAG, "memory " + memoryStr
+            //                            + " java-heap " + String.format("%.2f", ((double) javaHeap) / 1024)
+            //                            + " native-heap " + String.format("%.2f", ((double) nativeHeap) / 1024)
+            //                            + " code " + String.format("%.2f", ((double) code) / 1024)
+            //                            + " stack " + String.format("%.2f", ((double) stack) / 1024)
+            //                            + " graphics " + String.format("%.2f", ((double) graphics) / 1024)
+            //                            + " other " + String.format("%.2f", ((double) other) / 1024)
+            //                            + " pps " + String.format("%.2f", ((double) memoryInfos[0].getTotalPss()) / 1024)
+            //                    );
             return ((double) all) / 1024;
         } catch (Exception e) {
             e.printStackTrace();

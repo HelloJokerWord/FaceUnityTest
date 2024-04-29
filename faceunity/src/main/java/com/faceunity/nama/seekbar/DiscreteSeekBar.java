@@ -1,29 +1,5 @@
 package com.faceunity.nama.seekbar;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
-import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.ViewParent;
-
-
 import com.faceunity.nama.R;
 import com.faceunity.nama.seekbar.internal.PopupIndicator;
 import com.faceunity.nama.seekbar.internal.compat.AnimatorCompat;
@@ -35,114 +11,51 @@ import com.faceunity.nama.seekbar.internal.drawable.TrackRectDrawable;
 import java.util.Formatter;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewParent;
+
 public class DiscreteSeekBar extends View {
     private static final String TAG = DiscreteSeekBar.class.getSimpleName();
-
-    /**
-     * Interface to propagate seekbar change event
-     */
-    public interface OnProgressChangeListener {
-        /**
-         * When the {@link DiscreteSeekBar} value changes
-         *
-         * @param seekBar  The DiscreteSeekBar
-         * @param value    the new value
-         * @param fromUser if the change was made from the user or not (i.e. the developer calling {@link #setProgress(int)}
-         */
-        public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser);
-
-        public void onStartTrackingTouch(DiscreteSeekBar seekBar);
-
-        public void onStopTrackingTouch(DiscreteSeekBar seekBar);
-    }
-
-    public static class OnSimpleProgressChangeListener implements OnProgressChangeListener {
-        public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-
-        }
-
-        public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
-        }
-
-        public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-
-        }
-    }
-
-    /**
-     * Interface to transform the current internal value of this DiscreteSeekBar to anther one for the visualization.
-     * <p/>
-     * This will be used on the floating bubble to display a different value if needed.
-     * <p/>
-     * Using this in conjunction with {@link #setIndicatorFormatter(String)} you will be able to manipulate the
-     * value seen by the user
-     *
-     * @see #setIndicatorFormatter(String)
-     * @see #setNumericTransformer(NumericTransformer)
-     */
-    public static abstract class NumericTransformer {
-        /**
-         * Return the desired value to be shown to the user.
-         * This value will be formatted using the format specified by {@link #setIndicatorFormatter} before displaying it
-         *
-         * @param value The value to be transformed
-         * @return The transformed int
-         */
-        public abstract int transform(int value);
-
-        /**
-         * Return the desired value to be shown to the user.
-         * This value will be displayed 'as is' without further formatting.
-         *
-         * @param value The value to be transformed
-         * @return A formatted string
-         */
-        public String transformToString(int value) {
-            return String.valueOf(value);
-        }
-
-        /**
-         * Used to indicate which transform will be used. If this method returns true,
-         * {@link #transformToString(int)} will be used, otherwise {@link #transform(int)}
-         * will be used
-         */
-        public boolean useStringTransform() {
-            return false;
-        }
-    }
-
-
-    private static class DefaultNumericTransformer extends NumericTransformer {
-
-        @Override
-        public int transform(int value) {
-            return value;
-        }
-    }
-
-
     private static final boolean isLollipopOrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     //We want to always use a formatter so the indicator numbers are "translated" to specific locales.
     private static final String DEFAULT_FORMATTER = "%d";
-
     private static final int PRESSED_STATE = android.R.attr.state_pressed;
     private static final int FOCUSED_STATE = android.R.attr.state_focused;
     private static final int PROGRESS_ANIMATION_DURATION = 250;
     private static final int INDICATOR_DELAY_FOR_TAPS = 150;
     private static final int DEFAULT_THUMB_COLOR = 0xff009688;
     private static final int SEPARATION_DP = 5;
+    private final int mAddedTouchBounds;
+    //We use our own Formatter to avoid creating new instances on every progress change
+    Formatter mFormatter;
     private ThumbDrawable mThumb;
     private TrackRectDrawable mTrack;
     private TrackRectDrawable mTrackBase;
     private TrackRectDrawable mScrubber;
     private Drawable mRipple;
-
     private int mTrackHeight;
     private int mTrackBaseHeight;
     private int mScrubberHeight;
-    private final int mAddedTouchBounds;
-
     private int mMax;
     private int mMin;
     private int mValue;
@@ -150,15 +63,12 @@ public class DiscreteSeekBar extends View {
     private boolean mMirrorForRtl = false;
     private boolean mAllowTrackClick = true;
     private boolean mIndicatorPopupEnabled = true;
-    //We use our own Formatter to avoid creating new instances on every progress change
-    Formatter mFormatter;
     private String mIndicatorFormatter;
     private NumericTransformer mNumericTransformer;
     private StringBuilder mFormatBuilder;
     private OnProgressChangeListener mPublicChangeListener;
     private boolean mIsDragging;
     private int mDragOffset;
-
     private Rect mInvalidateRect = new Rect();
     private Rect mTempRect = new Rect();
     private PopupIndicator mIndicator;
@@ -167,9 +77,25 @@ public class DiscreteSeekBar extends View {
     private int mAnimationTarget;
     private float mDownX;
     private float mTouchSlop;
-
     private int mValueBase;
+    private Runnable mShowIndicatorRunnable = new Runnable() {
+        @Override
+        public void run() {
+            showFloater();
+        }
+    };
+    private MarkerDrawable.MarkerAnimationListener mFloaterListener = new MarkerDrawable.MarkerAnimationListener() {
+        @Override
+        public void onClosingComplete() {
+            mThumb.animateToNormal();
+        }
 
+        @Override
+        public void onOpeningComplete() {
+
+        }
+
+    };
     public DiscreteSeekBar(Context context) {
         this(context, null);
     }
@@ -299,6 +225,16 @@ public class DiscreteSeekBar extends View {
     }
 
     /**
+     * Retrieves the current {@link NumericTransformer}
+     *
+     * @return NumericTransformer
+     * @see #setNumericTransformer
+     */
+    public NumericTransformer getNumericTransformer() {
+        return mNumericTransformer;
+    }
+
+    /**
      * Sets the current {@link NumericTransformer}
      *
      * @param transformer
@@ -311,14 +247,8 @@ public class DiscreteSeekBar extends View {
         updateProgressMessage(mValue);
     }
 
-    /**
-     * Retrieves the current {@link NumericTransformer}
-     *
-     * @return NumericTransformer
-     * @see #setNumericTransformer
-     */
-    public NumericTransformer getNumericTransformer() {
-        return mNumericTransformer;
+    public int getMax() {
+        return mMax;
     }
 
     /**
@@ -347,8 +277,8 @@ public class DiscreteSeekBar extends View {
         updateIndicatorSizes();
     }
 
-    public int getMax() {
-        return mMax;
+    public int getMin() {
+        return mMin;
     }
 
     /**
@@ -373,22 +303,6 @@ public class DiscreteSeekBar extends View {
         updateKeyboardRange();
     }
 
-    public int getMin() {
-        return mMin;
-    }
-
-    /**
-     * Sets the current progress for this DiscreteSeekBar
-     * The supplied argument will be capped to the current MIN-MAX range
-     *
-     * @param progress
-     * @see #setMax(int)
-     * @see #setMin(int)
-     */
-    public void setProgress(int progress) {
-        setProgress(progress, false);
-    }
-
     private void setProgress(int value, boolean fromUser) {
         value = Math.max(mMin, Math.min(mMax, value));
         if (isAnimationRunning()) {
@@ -408,6 +322,18 @@ public class DiscreteSeekBar extends View {
      */
     public int getProgress() {
         return mValue;
+    }
+
+    /**
+     * Sets the current progress for this DiscreteSeekBar
+     * The supplied argument will be capped to the current MIN-MAX range
+     *
+     * @param progress
+     * @see #setMax(int)
+     * @see #setMin(int)
+     */
+    public void setProgress(int progress) {
+        setProgress(progress, false);
     }
 
     /**
@@ -575,7 +501,6 @@ public class DiscreteSeekBar extends View {
             mKeyProgressIncrement = Math.max(1, Math.round((float) range / 20));
         }
     }
-
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -814,7 +739,6 @@ public class DiscreteSeekBar extends View {
         return isAnimationRunning() ? getAnimationTarget() : mValue;
     }
 
-
     boolean isAnimationRunning() {
         return mPositionAnimator != null && mPositionAnimator.isRunning();
     }
@@ -849,16 +773,15 @@ public class DiscreteSeekBar extends View {
         return mAnimationTarget;
     }
 
+    float getAnimationPosition() {
+        return mAnimationPosition;
+    }
+
     void setAnimationPosition(float position) {
         mAnimationPosition = position;
         float currentScale = (position - mMin) / (float) (mMax - mMin);
         updateProgressFromAnimation(currentScale);
     }
-
-    float getAnimationPosition() {
-        return mAnimationPosition;
-    }
-
 
     private void updateDragging(MotionEvent ev) {
         setHotspot(ev.getX(), ev.getY());
@@ -951,7 +874,6 @@ public class DiscreteSeekBar extends View {
         invalidate(mInvalidateRect);
     }
 
-
     private void setHotspot(float x, float y) {
         DrawableCompat.setHotspot(mRipple, x, y);
     }
@@ -968,13 +890,6 @@ public class DiscreteSeekBar extends View {
         }
     }
 
-    private Runnable mShowIndicatorRunnable = new Runnable() {
-        @Override
-        public void run() {
-            showFloater();
-        }
-    };
-
     private void showFloater() {
         if (!isInEditMode()) {
             mThumb.animateToPressed();
@@ -990,19 +905,6 @@ public class DiscreteSeekBar extends View {
             notifyBubble(false);
         }
     }
-
-    private MarkerDrawable.MarkerAnimationListener mFloaterListener = new MarkerDrawable.MarkerAnimationListener() {
-        @Override
-        public void onClosingComplete() {
-            mThumb.animateToNormal();
-        }
-
-        @Override
-        public void onOpeningComplete() {
-
-        }
-
-    };
 
     @Override
     protected void onDetachedFromWindow() {
@@ -1042,7 +944,102 @@ public class DiscreteSeekBar extends View {
         super.onRestoreInstanceState(customState.getSuperState());
     }
 
+    /**
+     * Interface to propagate seekbar change event
+     */
+    public interface OnProgressChangeListener {
+        /**
+         * When the {@link DiscreteSeekBar} value changes
+         *
+         * @param seekBar  The DiscreteSeekBar
+         * @param value    the new value
+         * @param fromUser if the change was made from the user or not (i.e. the developer calling {@link #setProgress(int)}
+         */
+        public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser);
+
+        public void onStartTrackingTouch(DiscreteSeekBar seekBar);
+
+        public void onStopTrackingTouch(DiscreteSeekBar seekBar);
+    }
+
+    public static class OnSimpleProgressChangeListener implements OnProgressChangeListener {
+        public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+
+        }
+
+        public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+        }
+
+        public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
+        }
+    }
+
+    /**
+     * Interface to transform the current internal value of this DiscreteSeekBar to anther one for the visualization.
+     * <p/>
+     * This will be used on the floating bubble to display a different value if needed.
+     * <p/>
+     * Using this in conjunction with {@link #setIndicatorFormatter(String)} you will be able to manipulate the
+     * value seen by the user
+     *
+     * @see #setIndicatorFormatter(String)
+     * @see #setNumericTransformer(NumericTransformer)
+     */
+    public static abstract class NumericTransformer {
+        /**
+         * Return the desired value to be shown to the user.
+         * This value will be formatted using the format specified by {@link #setIndicatorFormatter} before displaying it
+         *
+         * @param value The value to be transformed
+         * @return The transformed int
+         */
+        public abstract int transform(int value);
+
+        /**
+         * Return the desired value to be shown to the user.
+         * This value will be displayed 'as is' without further formatting.
+         *
+         * @param value The value to be transformed
+         * @return A formatted string
+         */
+        public String transformToString(int value) {
+            return String.valueOf(value);
+        }
+
+        /**
+         * Used to indicate which transform will be used. If this method returns true,
+         * {@link #transformToString(int)} will be used, otherwise {@link #transform(int)}
+         * will be used
+         */
+        public boolean useStringTransform() {
+            return false;
+        }
+    }
+
+    private static class DefaultNumericTransformer extends NumericTransformer {
+
+        @Override
+        public int transform(int value) {
+            return value;
+        }
+    }
+
     static class CustomState extends BaseSavedState {
+        public static final Creator<CustomState> CREATOR =
+                new Creator<CustomState>() {
+
+                    @Override
+                    public CustomState[] newArray(int size) {
+                        return new CustomState[size];
+                    }
+
+                    @Override
+                    public CustomState createFromParcel(Parcel incoming) {
+                        return new CustomState(incoming);
+                    }
+                };
         private int progress;
         private int max;
         private int min;
@@ -1065,19 +1062,5 @@ public class DiscreteSeekBar extends View {
             outcoming.writeInt(max);
             outcoming.writeInt(min);
         }
-
-        public static final Creator<CustomState> CREATOR =
-                new Creator<CustomState>() {
-
-                    @Override
-                    public CustomState[] newArray(int size) {
-                        return new CustomState[size];
-                    }
-
-                    @Override
-                    public CustomState createFromParcel(Parcel incoming) {
-                        return new CustomState(incoming);
-                    }
-                };
     }
 }

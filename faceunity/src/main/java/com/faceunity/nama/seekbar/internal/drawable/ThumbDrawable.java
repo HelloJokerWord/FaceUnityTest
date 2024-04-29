@@ -1,15 +1,14 @@
 package com.faceunity.nama.seekbar.internal.drawable;
 
+import com.faceunity.nama.seekbar.internal.Marker;
+
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-
-
-import com.faceunity.nama.seekbar.internal.Marker;
+import androidx.annotation.NonNull;
 
 
 /**
@@ -33,6 +32,14 @@ public class ThumbDrawable extends StateDrawable implements Animatable {
     private final int mSize;
     private boolean mOpen;
     private boolean mRunning;
+    private Runnable opener = new Runnable() {
+        @Override
+        public void run() {
+            mOpen = true;
+            invalidateSelf();
+            mRunning = false;
+        }
+    };
 
     public ThumbDrawable(@NonNull ColorStateList tintStateList, int size) {
         super(tintStateList);
@@ -69,15 +76,6 @@ public class ThumbDrawable extends StateDrawable implements Animatable {
         unscheduleSelf(opener);
         invalidateSelf();
     }
-
-    private Runnable opener = new Runnable() {
-        @Override
-        public void run() {
-            mOpen = true;
-            invalidateSelf();
-            mRunning = false;
-        }
-    };
 
     @Override
     public void start() {

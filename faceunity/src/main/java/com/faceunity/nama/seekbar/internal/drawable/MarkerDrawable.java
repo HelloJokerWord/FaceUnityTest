@@ -10,7 +10,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Animatable;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
@@ -31,7 +31,9 @@ import android.view.animation.Interpolator;
 public class MarkerDrawable extends StateDrawable implements Animatable {
     private static final long FRAME_DURATION = 1000 / 60;
     private static final int ANIMATION_DURATION = 250;
-
+    Path mPath = new Path();
+    RectF mRect = new RectF();
+    Matrix mMatrix = new Matrix();
     private float mCurrentScale = 0f;
     private Interpolator mInterpolator;
     private long mStartTime;
@@ -48,10 +50,6 @@ public class MarkerDrawable extends StateDrawable implements Animatable {
     //colors for interpolation
     private int mStartColor;//Color when the Marker is OPEN
     private int mEndColor;//Color when the arker is CLOSED
-
-    Path mPath = new Path();
-    RectF mRect = new RectF();
-    Matrix mMatrix = new Matrix();
     private MarkerAnimationListener mMarkerListener;
 
     public MarkerDrawable(@NonNull ColorStateList tintList, int closedSize) {
@@ -61,6 +59,15 @@ public class MarkerDrawable extends StateDrawable implements Animatable {
         mStartColor = tintList.getColorForState(new int[]{android.R.attr.state_enabled, android.R.attr.state_pressed}, tintList.getDefaultColor());
         mEndColor = tintList.getDefaultColor();
 
+    }
+
+    private static int blendColors(int color1, int color2, float factor) {
+        final float inverseFactor = 1f - factor;
+        float a = (Color.alpha(color1) * factor) + (Color.alpha(color2) * inverseFactor);
+        float r = (Color.red(color1) * factor) + (Color.red(color2) * inverseFactor);
+        float g = (Color.green(color1) * factor) + (Color.green(color2) * inverseFactor);
+        float b = (Color.blue(color1) * factor) + (Color.blue(color2) * inverseFactor);
+        return Color.argb((int) a, (int) r, (int) g, (int) b);
     }
 
     public void setExternalOffset(int offset) {
@@ -161,9 +168,7 @@ public class MarkerDrawable extends StateDrawable implements Animatable {
         } else {
             notifyFinishedToListener();
         }
-    }
-
-    private final Runnable mUpdater = new Runnable() {
+    }    private final Runnable mUpdater = new Runnable() {
 
         @Override
         public void run() {
@@ -212,16 +217,6 @@ public class MarkerDrawable extends StateDrawable implements Animatable {
         return mRunning;
     }
 
-    private static int blendColors(int color1, int color2, float factor) {
-        final float inverseFactor = 1f - factor;
-        float a = (Color.alpha(color1) * factor) + (Color.alpha(color2) * inverseFactor);
-        float r = (Color.red(color1) * factor) + (Color.red(color2) * inverseFactor);
-        float g = (Color.green(color1) * factor) + (Color.green(color2) * inverseFactor);
-        float b = (Color.blue(color1) * factor) + (Color.blue(color2) * inverseFactor);
-        return Color.argb((int) a, (int) r, (int) g, (int) b);
-    }
-
-
     /**
      * A listener interface to porpagate animation events
      * This is the "poor's man" AnimatorListener for this Drawable
@@ -231,4 +226,7 @@ public class MarkerDrawable extends StateDrawable implements Animatable {
 
         public void onOpeningComplete();
     }
+
+
+
 }

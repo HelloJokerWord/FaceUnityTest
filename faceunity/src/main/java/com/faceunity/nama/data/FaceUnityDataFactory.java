@@ -1,9 +1,9 @@
 package com.faceunity.nama.data;
 
-import com.faceunity.nama.FUConfig;
 import com.faceunity.core.enumeration.FUAIProcessorEnum;
 import com.faceunity.core.faceunity.FUAIKit;
 import com.faceunity.core.faceunity.FURenderKit;
+import com.faceunity.nama.FUConfig;
 import com.faceunity.nama.FURenderer;
 import com.faceunity.nama.utils.FuDeviceUtils;
 
@@ -20,15 +20,12 @@ public class FaceUnityDataFactory {
     public BodyBeautyDataFactory mBodyBeautyDataFactory;
     public MakeupDataFactory mMakeupDataFactory;
     public PropDataFactory mPropDataFactory;
-
-
-    private FURenderKit mFURenderKit = FURenderKit.getInstance();
-    private FURenderer mFURenderer = FURenderer.getInstance();
-
     /**
      * 道具加载标识
      */
     public int currentFunctionIndex;
+    private FURenderKit mFURenderKit = FURenderKit.getInstance();
+    private FURenderer mFURenderer = FURenderer.getInstance();
     private boolean hasFaceBeautyOrFilterLoaded = false;
     private boolean hasBodyBeautyLoaded = false;
     private boolean hasMakeupLoaded = false;
@@ -57,7 +54,7 @@ public class FaceUnityDataFactory {
         hasFaceBeautyOrFilterLoaded = needBindFaceBeauty;
         //高端机开启小脸检测
         FUAIKit.getInstance().faceProcessorSetFaceLandmarkQuality(FUConfig.DEVICE_LEVEL);
-        if (FUConfig.DEVICE_LEVEL  > FuDeviceUtils.DEVICE_LEVEL_ONE)
+        if (FUConfig.DEVICE_LEVEL > FuDeviceUtils.DEVICE_LEVEL_ONE)
             FUAIKit.getInstance().fuFaceProcessorSetDetectSmallFace(true);
         //选中哪一项加载哪一项道具
         switch (currentFunctionIndex) {
@@ -82,7 +79,7 @@ public class FaceUnityDataFactory {
                 break;
         }
         //补充没有选中某项但是需要做效果则靠下面这个逻辑
-        if (hasFaceBeautyOrFilterLoaded && (currentFunctionIndex != 0 || currentFunctionIndex != 1 ||currentFunctionIndex != 2)) {
+        if (hasFaceBeautyOrFilterLoaded && (currentFunctionIndex != 0 || currentFunctionIndex != 1 || currentFunctionIndex != 2)) {
             mFaceBeautyAndFilterDataFactory.bindCurrentRenderer();
         }
         if (hasPropLoaded && currentFunctionIndex != 3) {

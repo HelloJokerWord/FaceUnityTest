@@ -7,7 +7,7 @@ import com.faceunity.nama.seekbar.DiscreteSeekBar;
  * and as we didn't want to throw in external dependencies, we made this small class.
  * <p/>
  * <p>
- * This will work like {@link android.support.v4.view.ViewPropertyAnimatorCompat}, that is,
+ * This will work like {@link androidx.core.view.ViewPropertyAnimatorCompat}, that is,
  * not doing anything on API<11 and using the default {@link android.animation.ValueAnimator}
  * on API>=11
  * </p>
@@ -19,12 +19,12 @@ import com.faceunity.nama.seekbar.DiscreteSeekBar;
  * @hide
  */
 public abstract class AnimatorCompat {
-    public interface AnimationFrameUpdateListener {
-        public void onAnimationFrame(float currentValue);
-    }
-
     AnimatorCompat() {
 
+    }
+
+    public static final AnimatorCompat create(float start, float end, AnimationFrameUpdateListener listener) {
+        return new AnimatorCompatBase(start, end, listener);
     }
 
     public abstract void cancel();
@@ -35,8 +35,8 @@ public abstract class AnimatorCompat {
 
     public abstract void start();
 
-    public static final AnimatorCompat create(float start, float end, AnimationFrameUpdateListener listener) {
-        return new AnimatorCompatBase(start, end, listener);
+    public interface AnimationFrameUpdateListener {
+        public void onAnimationFrame(float currentValue);
     }
 
     private static class AnimatorCompatBase extends AnimatorCompat {

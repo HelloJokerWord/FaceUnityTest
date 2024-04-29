@@ -1,8 +1,5 @@
 package io.agora.framework;
 
-import android.graphics.Matrix;
-import android.util.Log;
-
 import com.faceunity.core.faceunity.FUAIKit;
 import com.faceunity.core.faceunity.FURenderKit;
 import com.faceunity.core.model.facebeauty.FaceBeautyBlurTypeEnum;
@@ -12,6 +9,8 @@ import com.faceunity.nama.utils.FuDeviceUtils;
 
 import java.nio.ByteBuffer;
 
+import android.graphics.Matrix;
+import android.util.Log;
 import io.agora.base.TextureBufferHelper;
 import io.agora.base.VideoFrame;
 import io.agora.base.internal.video.YuvHelper;
@@ -20,23 +19,22 @@ import io.agora.rtc2.gl.EglBaseProvider;
 
 public class PreprocessorFaceUnity {
     private final static String TAG = PreprocessorFaceUnity.class.getSimpleName();
-    private FURenderer mFURenderer = FURenderer.getInstance();
+    private final FURenderer mFURenderer = FURenderer.getInstance();
     private boolean renderSwitch = true;
     private TextureBufferHelper mTextureBufferHelper;
     private ByteBuffer nv21ByteBuffer;
     private byte[] nv21ByteArray;
     private int mFrameRotation;
-
-    public void setCSVUtils(CSVUtils cSVUtils) {
-        this.mCSVUtils = cSVUtils;
-    }
-
     private CSVUtils mCSVUtils;
+    private int originTexId;
+    private SurfaceViewListener mSurfaceViewListener;
 
     public PreprocessorFaceUnity() {
     }
 
-    private int originTexId;
+    public void setCSVUtils(CSVUtils cSVUtils) {
+        this.mCSVUtils = cSVUtils;
+    }
 
     public boolean processBeauty(VideoFrame videoFrame) {
         if (!renderSwitch) {
@@ -72,10 +70,7 @@ public class PreprocessorFaceUnity {
         }
 
         VideoFrame.I420Buffer i420Buffer = buffer.toI420();
-        YuvHelper.I420ToNV12(i420Buffer.getDataY(), i420Buffer.getStrideY(),
-                i420Buffer.getDataV(), i420Buffer.getStrideV(),
-                i420Buffer.getDataU(), i420Buffer.getStrideU(),
-                nv21ByteBuffer, width, height);
+        YuvHelper.I420ToNV12(i420Buffer.getDataY(), i420Buffer.getStrideY(), i420Buffer.getDataV(), i420Buffer.getStrideV(), i420Buffer.getDataU(), i420Buffer.getStrideU(), nv21ByteBuffer, width, height);
         nv21ByteBuffer.position(0);
         nv21ByteBuffer.get(nv21ByteArray);
         i420Buffer.release();
@@ -103,10 +98,7 @@ public class PreprocessorFaceUnity {
             if (videoFrame.getBuffer() instanceof VideoFrame.TextureBuffer) {
                 originTexId = ((VideoFrame.TextureBuffer) videoFrame.getBuffer()).getTextureId();
                 if (originTexId == 0) return false;
-                processTexId = mTextureBufferHelper.invoke(() ->
-                        mFURenderer.onDrawFrameDualInput(nv21ByteArray,
-                                originTexId, width,
-                                height));
+                processTexId = mTextureBufferHelper.invoke(() -> mFURenderer.onDrawFrameDualInput(nv21ByteArray, originTexId, width, height));
                 transformMatrix = ((VideoFrame.TextureBuffer) videoFrame.getBuffer()).getTransformMatrix();
             }
         }
@@ -122,13 +114,11 @@ public class PreprocessorFaceUnity {
         }
 
         if (mTextureBufferHelper != null) {
-            VideoFrame.TextureBuffer textureBuffer = mTextureBufferHelper.wrapTextureBuffer(
-                    width, height, VideoFrame.TextureBuffer.Type.RGB, processTexId, transformMatrix);
+            VideoFrame.TextureBuffer textureBuffer = mTextureBufferHelper.wrapTextureBuffer(width, height, VideoFrame.TextureBuffer.Type.RGB, processTexId, transformMatrix);
             videoFrame.replaceBuffer(textureBuffer, mFrameRotation, videoFrame.getTimestampNs());
         }
         return true;
     }
-
 
     public void setRenderEnable(boolean enabled) {
         renderSwitch = enabled;
@@ -160,14 +150,6 @@ public class PreprocessorFaceUnity {
         }
     }
 
-    private SurfaceViewListener mSurfaceViewListener;
-
-    public interface SurfaceViewListener {
-        void onSurfaceCreated();
-
-        void onSurfaceDestroyed();
-    }
-
     public void setSurfaceListener(SurfaceViewListener surfaceViewListener) {
         this.mSurfaceViewListener = surfaceViewListener;
     }
@@ -180,15 +162,21 @@ public class PreprocessorFaceUnity {
         float faceProcessorGetConfidenceScore = FUAIKit.getInstance().getFaceProcessorGetConfidenceScore(0);
         if (faceProcessorGetConfidenceScore >= 0.95) {
             //高端手机并且检测到人脸开启均匀磨皮，人脸点位质
-            if (FURenderKit.getInstance() != null && FURenderKit.getInstance().getFaceBeauty() != null && FURenderKit.getInstance().getFaceBeauty().getBlurType() != FaceBeautyBlurTypeEnum.EquallySkin) {
+            if (FURenderKit.getInstance().getFaceBeauty() != null && FURenderKit.getInstance().getFaceBeauty().getBlurType() != FaceBeautyBlurTypeEnum.EquallySkin) {
                 FURenderKit.getInstance().getFaceBeauty().setBlurType(FaceBeautyBlurTypeEnum.EquallySkin);
                 FURenderKit.getInstance().getFaceBeauty().setEnableBlurUseMask(true);
             }
         } else {
-            if (FURenderKit.getInstance() != null && FURenderKit.getInstance().getFaceBeauty() != null && FURenderKit.getInstance().getFaceBeauty().getBlurType() != FaceBeautyBlurTypeEnum.FineSkin) {
+            if (FURenderKit.getInstance().getFaceBeauty() != null && FURenderKit.getInstance().getFaceBeauty().getBlurType() != FaceBeautyBlurTypeEnum.FineSkin) {
                 FURenderKit.getInstance().getFaceBeauty().setBlurType(FaceBeautyBlurTypeEnum.FineSkin);
                 FURenderKit.getInstance().getFaceBeauty().setEnableBlurUseMask(false);
             }
         }
+    }
+
+    public interface SurfaceViewListener {
+        void onSurfaceCreated();
+
+        void onSurfaceDestroyed();
     }
 }

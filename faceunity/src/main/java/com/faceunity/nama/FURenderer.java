@@ -1,7 +1,5 @@
 package com.faceunity.nama;
 
-import android.content.Context;
-
 import com.faceunity.core.callback.OperateCallback;
 import com.faceunity.core.entity.FURenderInputData;
 import com.faceunity.core.entity.FURenderOutputData;
@@ -13,11 +11,18 @@ import com.faceunity.core.faceunity.FUAIKit;
 import com.faceunity.core.faceunity.FURenderConfig;
 import com.faceunity.core.faceunity.FURenderKit;
 import com.faceunity.core.faceunity.FURenderManager;
+import com.faceunity.core.utils.CameraUtils;
 import com.faceunity.core.utils.FULogger;
 import com.faceunity.nama.listener.FURendererListener;
 import com.faceunity.nama.utils.FuDeviceUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+import java.util.HashMap;
+
+import android.content.Context;
+import android.hardware.Camera;
 
 
 /**
@@ -27,7 +32,31 @@ import java.io.File;
 public class FURenderer extends IFURenderer {
 
 
+    private static final int NANO_IN_ONE_MILLI_SECOND = 1_000_000;
+    private static final int NANO_IN_ONE_SECOND = 1_000_000_000;
+    private static final int FRAME_COUNT = 20;
     public volatile static FURenderer INSTANCE;
+    /**
+     * 状态回调监听
+     */
+    private FURendererListener mFURendererListener;
+    /* 特效FURenderKit*/
+    private final FURenderKit mFURenderKit = FURenderKit.getInstance();
+    /* 特效FURenderKit*/
+    private final FUAIKit mFUAIKit = FUAIKit.getInstance();
+    /* AI道具*/
+    private final String BUNDLE_AI_FACE = "model" + File.separator + "ai_face_processor.bundle";
+    private final String BUNDLE_AI_HUMAN = "model" + File.separator + "ai_human_processor.bundle";
+    /*检测类型*/
+    private FUAIProcessorEnum aIProcess = FUAIProcessorEnum.FACE_PROCESSOR;
+    private final HashMap<Integer, CameraFacingEnum> cameraOrientationMap = new HashMap<>();
+
+    /*检测标识*/
+    private int aIProcessTrackStatus = -1;
+    private boolean mIsRunBenchmark = false;
+    private int mCurrentFrameCount;
+    private long mLastFrameTimestamp;
+    private long mSumCallTime;
 
     public static FURenderer getInstance() {
         if (INSTANCE == null) {
@@ -41,26 +70,6 @@ public class FURenderer extends IFURenderer {
     }
 
     /**
-     * 状态回调监听
-     */
-    private FURendererListener mFURendererListener;
-
-
-    /* 特效FURenderKit*/
-    private FURenderKit mFURenderKit = FURenderKit.getInstance();
-    /* 特效FURenderKit*/
-    private FUAIKit mFUAIKit = FUAIKit.getInstance();
-
-    /* AI道具*/
-    private String BUNDLE_AI_FACE = "model" + File.separator + "ai_face_processor.bundle";
-    private String BUNDLE_AI_HUMAN = "model" + File.separator + "ai_human_processor.bundle";
-
-    /*检测类型*/
-    private FUAIProcessorEnum aIProcess = FUAIProcessorEnum.FACE_PROCESSOR;
-    /*检测标识*/
-    private int aIProcessTrackStatus = -1;
-
-    /**
      * @return version
      */
     public String getVersion() {
@@ -69,16 +78,14 @@ public class FURenderer extends IFURenderer {
 
     /**
      * 初始化鉴权
-     *
-     * @param context
      */
     @Override
     public void setup(Context context) {
-        FURenderManager.setKitDebug(FULogger.LogLevel.ERROR);
-        FURenderManager.setCoreDebug(FULogger.LogLevel.OFF);
-        FURenderManager.registerFURender(context, authpack.A(), new OperateCallback() {
+        FURenderManager.setKitDebug(FULogger.LogLevel.DEBUG);
+        FURenderManager.setCoreDebug(FULogger.LogLevel.DEBUG);
+        FURenderManager.registerFURender(context, AuthPack.a(), new OperateCallback() {
             @Override
-            public void onSuccess(int i, String s) {
+            public void onSuccess(int i, @NotNull String s) {
                 if (i == FURenderConfig.OPERATE_SUCCESS_AUTH) {
                     mFUAIKit.loadAIProcessor(BUNDLE_AI_FACE, FUAITypeEnum.FUAITYPE_FACEPROCESSOR);
                     mFUAIKit.loadAIProcessor(BUNDLE_AI_HUMAN, FUAITypeEnum.FUAITYPE_HUMAN_PROCESSOR);
@@ -89,10 +96,13 @@ public class FURenderer extends IFURenderer {
             }
 
             @Override
-            public void onFail(int i, String s) {
+            public void onFail(int i, @NotNull String s) {
             }
         });
     }
+    //endregion AI识别
+
+    //------------------------------FPS 渲染时长回调相关定义------------------------------------
 
     /**
      * 开启合成状态
@@ -101,7 +111,6 @@ public class FURenderer extends IFURenderer {
     public void bindListener(FURendererListener mFURendererListener) {
         this.mFURendererListener = mFURendererListener;
     }
-
 
     /**
      * 双输入接口，输入 buffer 和 texture，必须在具有 GL 环境的线程调用
@@ -112,7 +121,6 @@ public class FURenderer extends IFURenderer {
      * @param texId  纹理 ID
      * @param width  宽
      * @param height 高
-     * @return
      */
     @Override
     public int onDrawFrameDualInput(byte[] img, int texId, int width, int height) {
@@ -129,16 +137,16 @@ public class FURenderer extends IFURenderer {
         config.setInputTextureMatrix(inputTextureMatrix);
         config.setCameraFacing(cameraFacing);
         config.setOutputMatrix(outputMatrix);
-        mCallStartTime = System.nanoTime();
+        //region AI识别
+        long callStartTime = System.nanoTime();
         FURenderOutputData outputData = mFURenderKit.renderWithInput(inputData);
-        mSumCallTime += System.nanoTime() - mCallStartTime;
+        mSumCallTime += System.nanoTime() - callStartTime;
         if (outputData.getTexture() != null && outputData.getTexture().getTexId() > 0) {
             return outputData.getTexture().getTexId();
         }
         return texId;
 
     }
-
 
     /**
      * 释放资源
@@ -150,11 +158,9 @@ public class FURenderer extends IFURenderer {
         mFURendererListener = null;
     }
 
-
     /**
      * 渲染前置执行
      *
-     * @return
      */
     private void prepareDrawFrame() {
         benchmarkFPS();
@@ -162,13 +168,9 @@ public class FURenderer extends IFURenderer {
         trackStatus();
     }
 
-    //region AI识别
-
     /**
      * 设置输入数据朝向
      *
-     * @param inputOrientation
-     * @param isFront
      */
     public void setInputOrientation(int inputOrientation, boolean isFront) {
         setInputOrientation(inputOrientation);
@@ -184,11 +186,9 @@ public class FURenderer extends IFURenderer {
         }
     }
 
-
     /**
      * 设置检测类型
      *
-     * @param type
      */
     @Override
     public void setAIProcessTrackType(FUAIProcessorEnum type) {
@@ -199,13 +199,11 @@ public class FURenderer extends IFURenderer {
     /**
      * 设置FPS检测
      *
-     * @param enable
      */
     @Override
     public void setMarkFPSEnable(boolean enable) {
         mIsRunBenchmark = enable;
     }
-
 
     /**
      * AI识别数目检测
@@ -228,18 +226,6 @@ public class FURenderer extends IFURenderer {
             mFURendererListener.onTrackStatusChanged(aIProcess, trackCount);
         }
     }
-    //endregion AI识别
-
-    //------------------------------FPS 渲染时长回调相关定义------------------------------------
-
-    private static final int NANO_IN_ONE_MILLI_SECOND = 1_000_000;
-    private static final int NANO_IN_ONE_SECOND = 1_000_000_000;
-    private static final int FRAME_COUNT = 20;
-    private boolean mIsRunBenchmark = false;
-    private int mCurrentFrameCount;
-    private long mLastFrameTimestamp;
-    private long mSumCallTime;
-    private long mCallStartTime;
 
     private void benchmarkFPS() {
         if (!mIsRunBenchmark) {

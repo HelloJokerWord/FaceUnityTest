@@ -1,11 +1,9 @@
 package io.agora.rtcwithfu.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
-
-import io.agora.rtc2.RtcEngine;
 import io.agora.rtcwithfu.MyApplication;
 import io.agora.rtcwithfu.RtcEngineEventHandler;
 

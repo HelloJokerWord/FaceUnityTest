@@ -1,9 +1,9 @@
 package com.faceunity.nama.utils.device;
 
-import android.text.TextUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
+
+import android.text.TextUtils;
 
 
 /**

@@ -14,22 +14,22 @@
             android:id="@+id/control_beauty_skin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"
+            android:visibility="gone" />
 
         <com.faceunity.nama.control.FaceBeautyShapeControlView
             android:id="@+id/control_beauty_shape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"
+            android:visibility="gone" />
 
         <com.faceunity.nama.control.FilterControlView
             android:id="@+id/control_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"
+            android:visibility="gone" />
 
         <com.faceunity.nama.control.BodyBeautyControlView
             android:id="@+id/control_body"

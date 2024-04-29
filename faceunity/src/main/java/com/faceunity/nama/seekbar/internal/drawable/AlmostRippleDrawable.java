@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
@@ -38,6 +38,13 @@ public class AlmostRippleDrawable extends StateDrawable implements Animatable {
         setColor(tintStateList);
     }
 
+    private static int getModulatedAlphaColor(int alphaValue, int originalColor) {
+        int alpha = Color.alpha(originalColor);
+        int scale = alphaValue + (alphaValue >> 7);
+        alpha = alpha * scale >> 8;
+        return Color.argb(alpha, Color.red(originalColor), Color.green(originalColor), Color.blue(originalColor));
+    }
+
     public void setColor(@NonNull ColorStateList tintStateList) {
         int defaultColor = tintStateList.getDefaultColor();
         mFocusedColor = tintStateList.getColorForState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused}, defaultColor);
@@ -48,13 +55,6 @@ public class AlmostRippleDrawable extends StateDrawable implements Animatable {
         mFocusedColor = getModulatedAlphaColor(130, mFocusedColor);
         mPressedColor = getModulatedAlphaColor(130, mPressedColor);
         mDisabledColor = getModulatedAlphaColor(130, mDisabledColor);
-    }
-
-    private static int getModulatedAlphaColor(int alphaValue, int originalColor) {
-        int alpha = Color.alpha(originalColor);
-        int scale = alphaValue + (alphaValue >> 7);
-        alpha = alpha * scale >> 8;
-        return Color.argb(alpha, Color.red(originalColor), Color.green(originalColor), Color.blue(originalColor));
     }
 
     @Override
@@ -169,7 +169,10 @@ public class AlmostRippleDrawable extends StateDrawable implements Animatable {
         invalidateSelf();
     }
 
-    private final Runnable mUpdater = new Runnable() {
+    @Override
+    public void start() {
+        //No-Op. We control our own animation
+    }    private final Runnable mUpdater = new Runnable() {
 
         @Override
         public void run() {
@@ -189,11 +192,6 @@ public class AlmostRippleDrawable extends StateDrawable implements Animatable {
     };
 
     @Override
-    public void start() {
-        //No-Op. We control our own animation
-    }
-
-    @Override
     public void stop() {
         //No-Op. We control our own animation
     }
@@ -202,4 +200,6 @@ public class AlmostRippleDrawable extends StateDrawable implements Animatable {
     public boolean isRunning() {
         return mRunning;
     }
+
+
 }

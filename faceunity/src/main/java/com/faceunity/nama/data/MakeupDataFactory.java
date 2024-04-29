@@ -1,12 +1,10 @@
 package com.faceunity.nama.data;
 
 
-import android.support.annotation.NonNull;
-
-import com.faceunity.nama.FUConfig;
 import com.faceunity.core.entity.FUBundleData;
 import com.faceunity.core.faceunity.FURenderKit;
 import com.faceunity.core.model.makeup.SimpleMakeup;
+import com.faceunity.nama.FUConfig;
 import com.faceunity.nama.entity.MakeupCombinationBean;
 import com.faceunity.nama.infe.AbstractMakeupDataFactory;
 import com.faceunity.nama.repo.MakeupSource;
@@ -14,6 +12,8 @@ import com.faceunity.nama.utils.FuDeviceUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import androidx.annotation.NonNull;
 
 /**
  * DESC：美妆业务工厂

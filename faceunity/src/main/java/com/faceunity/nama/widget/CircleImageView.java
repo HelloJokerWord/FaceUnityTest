@@ -15,6 +15,8 @@
  */
 package com.faceunity.nama.widget;
 
+import com.faceunity.nama.R;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -34,17 +36,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
-
-import com.faceunity.nama.R;
 
 /**
  * Thanks for https://github.com/hdodenhof/CircleImageView
@@ -282,6 +282,11 @@ public class CircleImageView extends ImageView {
     }
 
     @Override
+    public ColorFilter getColorFilter() {
+        return mColorFilter;
+    }
+
+    @Override
     public void setColorFilter(ColorFilter cf) {
         if (cf == mColorFilter) {
             return;
@@ -290,11 +295,6 @@ public class CircleImageView extends ImageView {
         mColorFilter = cf;
         applyColorFilter();
         invalidate();
-    }
-
-    @Override
-    public ColorFilter getColorFilter() {
-        return mColorFilter;
     }
 
     @SuppressWarnings("ConstantConditions")

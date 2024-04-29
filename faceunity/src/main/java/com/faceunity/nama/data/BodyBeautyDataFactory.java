@@ -20,20 +20,35 @@ import java.util.HashMap;
 public class BodyBeautyDataFactory extends AbstractBodyBeautyDataFactory {
 
 
-    interface BodyBeautySetParamInterface {
-        void setValue(double value);
-    }
-
-    interface BodyBeautyGetParamInterface {
-        double getValue();
-    }
-
-
-    /*渲染控制器*/
-    private final FURenderKit mFURenderKit = FURenderKit.getInstance();
-
     /*美体数据模型*/
     public final BodyBeauty bodyBeauty;
+    /*渲染控制器*/
+    private final FURenderKit mFURenderKit = FURenderKit.getInstance();
+    /*模型映射设置模型值*/
+    private final HashMap<String, BodyBeautySetParamInterface> bodyBeautySetMapping = new HashMap<String, BodyBeautySetParamInterface>() {
+        {
+            put(BodyBeautyParam.BODY_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setBodySlimIntensity(value));
+            put(BodyBeautyParam.LEG_STRETCH_INTENSITY, value -> getCurrentBodyBeautyModel().setLegStretchIntensity(value));
+            put(BodyBeautyParam.WAIST_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setWaistSlimIntensity(value));
+            put(BodyBeautyParam.SHOULDER_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setShoulderSlimIntensity(value));
+            put(BodyBeautyParam.HIP_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setHipSlimIntensity(value));
+            put(BodyBeautyParam.HEAD_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setHeadSlimIntensity(value));
+            put(BodyBeautyParam.LEG_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setLegSlimIntensity(value));
+        }
+    };
+    /*模型映射获取模型值*/
+    HashMap<String, BodyBeautyGetParamInterface> bodyBeautyGetMapping = new HashMap<String, BodyBeautyGetParamInterface>() {
+        {
+            put(BodyBeautyParam.BODY_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getBodySlimIntensity());
+            put(BodyBeautyParam.LEG_STRETCH_INTENSITY, () -> getCurrentBodyBeautyModel().getLegStretchIntensity());
+            put(BodyBeautyParam.WAIST_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getWaistSlimIntensity());
+            put(BodyBeautyParam.SHOULDER_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getShoulderSlimIntensity());
+            put(BodyBeautyParam.HIP_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getHipSlimIntensity());
+            put(BodyBeautyParam.HEAD_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getHeadSlimIntensity());
+            put(BodyBeautyParam.LEG_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getLegSlimIntensity());
+
+        }
+    };
 
     public BodyBeautyDataFactory() {
         bodyBeauty = new BodyBeauty(new FUBundleData(BodyBeautySource.BUNDLE_BODY_BEAUTY));
@@ -110,39 +125,20 @@ public class BodyBeautyDataFactory extends AbstractBodyBeautyDataFactory {
         }
     }
 
-    /*模型映射设置模型值*/
-    private final HashMap<String, BodyBeautySetParamInterface> bodyBeautySetMapping = new HashMap<String, BodyBeautySetParamInterface>() {
-        {
-            put(BodyBeautyParam.BODY_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setBodySlimIntensity(value));
-            put(BodyBeautyParam.LEG_STRETCH_INTENSITY, value -> getCurrentBodyBeautyModel().setLegStretchIntensity(value));
-            put(BodyBeautyParam.WAIST_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setWaistSlimIntensity(value));
-            put(BodyBeautyParam.SHOULDER_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setShoulderSlimIntensity(value));
-            put(BodyBeautyParam.HIP_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setHipSlimIntensity(value));
-            put(BodyBeautyParam.HEAD_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setHeadSlimIntensity(value));
-            put(BodyBeautyParam.LEG_SLIM_INTENSITY, value -> getCurrentBodyBeautyModel().setLegSlimIntensity(value));
-        }
-    };
-
-    /*模型映射获取模型值*/
-    HashMap<String, BodyBeautyGetParamInterface> bodyBeautyGetMapping = new HashMap<String, BodyBeautyGetParamInterface>() {
-        {
-            put(BodyBeautyParam.BODY_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getBodySlimIntensity());
-            put(BodyBeautyParam.LEG_STRETCH_INTENSITY, () -> getCurrentBodyBeautyModel().getLegStretchIntensity());
-            put(BodyBeautyParam.WAIST_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getWaistSlimIntensity());
-            put(BodyBeautyParam.SHOULDER_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getShoulderSlimIntensity());
-            put(BodyBeautyParam.HIP_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getHipSlimIntensity());
-            put(BodyBeautyParam.HEAD_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getHeadSlimIntensity());
-            put(BodyBeautyParam.LEG_SLIM_INTENSITY, () -> getCurrentBodyBeautyModel().getLegSlimIntensity());
-
-        }
-    };
-
-
     /**
      * FURenderKit加载当前特效
      */
     public void bindCurrentRenderer() {
         mFURenderKit.setBodyBeauty(bodyBeauty);
+    }
+
+    interface BodyBeautySetParamInterface {
+        void setValue(double value);
+    }
+
+
+    interface BodyBeautyGetParamInterface {
+        double getValue();
     }
 
 

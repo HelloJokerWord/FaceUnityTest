@@ -1,9 +1,6 @@
 package com.faceunity.nama.data;
 
 
-
-import android.support.annotation.NonNull;
-
 import com.faceunity.core.entity.FUBundleData;
 import com.faceunity.core.faceunity.FURenderKit;
 import com.faceunity.core.model.prop.Prop;
@@ -13,6 +10,8 @@ import com.faceunity.nama.infe.AbstractPropDataFactory;
 import com.faceunity.nama.repo.PropSource;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * DESC：道具业务工厂
@@ -24,10 +23,10 @@ public class PropDataFactory extends AbstractPropDataFactory {
     private final FURenderKit mFURenderKit = FURenderKit.getInstance();
     /*道具列表*/
     private final ArrayList<PropBean> propBeans;
-    /*默认选中下标*/
-    private int currentPropIndex;
     /*当前道具*/
     public Prop currentProp;
+    /*默认选中下标*/
+    private int currentPropIndex;
 
     public PropDataFactory(int index) {
         currentPropIndex = index;

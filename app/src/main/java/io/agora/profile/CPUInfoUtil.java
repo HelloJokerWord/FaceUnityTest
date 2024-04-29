@@ -1,8 +1,5 @@
 package io.agora.profile;
 
-import android.content.Context;
-import android.os.Build;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,17 +7,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 
+import android.content.Context;
+import android.os.Build;
+
 /**
  * cpu使用率获取工具类
  * Created by lirui on 2017/8/2.
  */
 
 public class CPUInfoUtil {
+    private final String PackageName;
     private long lastTotalCpu = 0;
     private long lastProcessCpu = 0;
-
-    private final String PackageName;
-
     private volatile boolean isRunningCPU = false;
     private volatile double cpuRate = 0;
 
@@ -32,7 +30,7 @@ public class CPUInfoUtil {
             } else {
                 PackageName = pn.substring(0, 15) + "+";
             }
-//            Log.e(TAG, "CSVUtils PackageName " + PackageName);
+            //            Log.e(TAG, "CSVUtils PackageName " + PackageName);
             isRunningCPU = true;
             CPUInfoThread cpuinfothread = new CPUInfoThread();
             cpuinfothread.start();
@@ -50,7 +48,7 @@ public class CPUInfoUtil {
             long nowTotalCpu = getTotalCpu();
             long nowProcessCpu = getMyProcessCpu();
             if (nowTotalCpu != 0 && (nowTotalCpu - lastTotalCpu) != 0) {
-//            Log.e(TAG, "cpu used nowProcessCpu " + nowProcessCpu + " lastProcessCpu " + lastProcessCpu + " nowTotalCpu " + nowTotalCpu + " lastTotalCpu " + lastTotalCpu);
+                //            Log.e(TAG, "cpu used nowProcessCpu " + nowProcessCpu + " lastProcessCpu " + lastProcessCpu + " nowTotalCpu " + nowTotalCpu + " lastTotalCpu " + lastTotalCpu);
                 pcpu = 100 * (tmp * (nowProcessCpu - lastProcessCpu) / (nowTotalCpu - lastTotalCpu));
             }
             lastProcessCpu = nowProcessCpu;
@@ -147,13 +145,13 @@ public class CPUInfoUtil {
                     }
                     // 读取到相应pkgName跳出循环（或者未找到）
                     if (line == null || line.endsWith(PackageName)) {
-//                        Log.e(TAG, "cpu line : " + line);
+                        //                        Log.e(TAG, "cpu line : " + line);
                         if (line != null && line.endsWith(PackageName)) {
                             String str[] = line.split(" ");
                             int t = 0;
                             for (int i = str.length - 1; i > 0; i--) {
                                 if (!str[i].isEmpty() && ++t == 4) {
-//                                Log.e(TAG, "cpu : " + str[i] + " allCPU " + allCPU);
+                                    //                                Log.e(TAG, "cpu : " + str[i] + " allCPU " + allCPU);
                                     cpuRate = 100 * Double.parseDouble(str[i]) / allCPU;
                                 }
                             }

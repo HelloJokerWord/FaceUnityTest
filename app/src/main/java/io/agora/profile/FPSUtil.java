@@ -9,6 +9,10 @@ public class FPSUtil {
     private static final int NANO_IN_ONE_SECOND = 1000 * NANO_IN_ONE_MILLI_SECOND;
 
     private static long sLastFrameTimeStamp = 0;
+    private static long mStartTime = 0;
+    private long mLimitMinTime = 33333333;
+    private long mLimitStartTime;
+    private int mLimitFrameRate;
 
     /**
      * 每帧都计算
@@ -19,11 +23,9 @@ public class FPSUtil {
         long tmp = System.nanoTime();
         double fps = ((double) NANO_IN_ONE_SECOND) / (tmp - sLastFrameTimeStamp);
         sLastFrameTimeStamp = tmp;
-//        Log.e(TAG, "FPS : " + fps);
+        //        Log.e(TAG, "FPS : " + fps);
         return fps;
     }
-
-    private static long mStartTime = 0;
 
     /**
      * 平均值
@@ -34,13 +36,9 @@ public class FPSUtil {
         long tmp = System.nanoTime();
         double fps = ((double) NANO_IN_ONE_SECOND) * time / (tmp - mStartTime);
         mStartTime = tmp;
-//        Log.e(TAG, "FPS : " + fps);
+        //        Log.e(TAG, "FPS : " + fps);
         return fps;
     }
-
-    private long mLimitMinTime = 33333333;
-    private long mLimitStartTime;
-    private int mLimitFrameRate;
 
     public void setLimitMinTime(long limitMinTime) {
         mLimitMinTime = limitMinTime;

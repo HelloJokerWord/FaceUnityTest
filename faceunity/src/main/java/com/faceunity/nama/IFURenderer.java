@@ -1,8 +1,6 @@
 package com.faceunity.nama;
 
 
-import android.content.Context;
-
 import com.faceunity.core.enumeration.CameraFacingEnum;
 import com.faceunity.core.enumeration.FUAIProcessorEnum;
 import com.faceunity.core.enumeration.FUExternalInputEnum;
@@ -10,6 +8,8 @@ import com.faceunity.core.enumeration.FUInputBufferEnum;
 import com.faceunity.core.enumeration.FUInputTextureEnum;
 import com.faceunity.core.enumeration.FUTransformMatrixEnum;
 import com.faceunity.nama.listener.FURendererListener;
+
+import android.content.Context;
 
 /**
  * DESC：

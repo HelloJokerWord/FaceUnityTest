@@ -1,12 +1,5 @@
 package com.faceunity.nama.ui;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.LinearLayout;
-
 import com.faceunity.nama.R;
 import com.faceunity.nama.checkbox.CheckGroup;
 import com.faceunity.nama.control.BodyBeautyControlView;
@@ -17,6 +10,13 @@ import com.faceunity.nama.control.MakeupControlView;
 import com.faceunity.nama.control.PropControlView;
 import com.faceunity.nama.data.FaceUnityDataFactory;
 
+import android.content.Context;
+import androidx.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+
 /**
  * DESC：
  * Created on 2021/4/26
@@ -24,28 +24,7 @@ import com.faceunity.nama.data.FaceUnityDataFactory;
 public class FaceUnityView extends LinearLayout {
 
     private Context mContext;
-
-    public FaceUnityView(Context context) {
-        super(context);
-        mContext = context;
-        init();
-    }
-
-    public FaceUnityView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
-        init();
-    }
-
-    public FaceUnityView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        mContext = context;
-        init();
-    }
-
-
     private FaceUnityDataFactory mDataFactory;
-
     private CheckGroup mCheckGroupView;//底部菜单
     private FaceBeautySkinControlView mFaceBeautySkinControlView;//美肤菜单
     private FaceBeautyShapeControlView mFaceBeautyShapeControlView;//美颜菜单
@@ -54,7 +33,21 @@ public class FaceUnityView extends LinearLayout {
     private PropControlView mPropControlView;//道具菜单
     private BodyBeautyControlView mBodyBeautyControlView;//美体菜单
     private View lineView;//分割线
-
+    public FaceUnityView(Context context) {
+        super(context);
+        mContext = context;
+        init();
+    }
+    public FaceUnityView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
+        init();
+    }
+    public FaceUnityView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        mContext = context;
+        init();
+    }
 
     private void init() {
         LayoutInflater.from(mContext).inflate(R.layout.layout_faceunity, this);
@@ -107,7 +100,7 @@ public class FaceUnityView extends LinearLayout {
         mCheckGroupView = findViewById(R.id.group_function);
         mFaceBeautySkinControlView = findViewById(R.id.control_beauty_skin);
         mFaceBeautyShapeControlView = findViewById(R.id.control_beauty_shape);
-        mFilterControlView= findViewById(R.id.control_filter);
+        mFilterControlView = findViewById(R.id.control_filter);
         mMakeupControlView = findViewById(R.id.control_makeup);
         mPropControlView = findViewById(R.id.control_prop);
         mBodyBeautyControlView = findViewById(R.id.control_body);

@@ -1,11 +1,14 @@
 package com.faceunity.nama.seekbar.internal;
 
+import com.faceunity.nama.seekbar.internal.compat.SeekBarCompat;
+import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.IBinder;
-import android.support.v4.view.GravityCompat;
+import androidx.core.view.GravityCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -13,10 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-
-
-import com.faceunity.nama.seekbar.internal.compat.SeekBarCompat;
-import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
 
 
 /**
@@ -35,6 +34,7 @@ import com.faceunity.nama.seekbar.internal.drawable.MarkerDrawable;
 public class PopupIndicator {
 
     private final WindowManager mWindowManager;
+    Point screenSize = new Point();
     private boolean mShowing;
     private Floater mPopupView;
     //Outside listener for the DiscreteSeekBar to get MarkerDrawable animation events.
@@ -43,7 +43,6 @@ public class PopupIndicator {
     //... phew!
     private MarkerDrawable.MarkerAnimationListener mListener;
     private int[] mDrawingLocation = new int[2];
-    Point screenSize = new Point();
 
     public PopupIndicator(Context context, AttributeSet attrs, int defStyleAttr, String maxValue, int thumbSize, int separation) {
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);

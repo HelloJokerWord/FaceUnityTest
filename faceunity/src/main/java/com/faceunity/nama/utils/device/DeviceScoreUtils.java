@@ -1,10 +1,5 @@
 package com.faceunity.nama.utils.device;
 
-import android.opengl.GLES20;
-import android.os.Build;
-import android.text.TextUtils;
-import android.util.Log;
-
 import com.faceunity.core.faceunity.OffLineRenderHandler;
 
 import java.io.BufferedReader;
@@ -14,6 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import android.opengl.GLES20;
+import android.os.Build;
+import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * @author changwei on 2023/11/8 15:00

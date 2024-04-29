@@ -1,16 +1,16 @@
 package com.faceunity.nama.dialog;
 
+import com.faceunity.nama.R;
+
+import java.lang.ref.WeakReference;
+
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.faceunity.nama.R;
-
-import java.lang.ref.WeakReference;
 
 
 /**
